@@ -27,6 +27,7 @@ private:
 	ros::Publisher monitor_pub_;
 	ros::ServiceServer server_;
 	nav_msgs::Odometry odom_;
+	tf::TransformBroadcaster monitor_odom_broadcaster_;
 };
 
 
@@ -34,12 +35,24 @@ bool ThirdRobotMonitorServer::getPos(third_robot_monitor::TeleportAbsolute::Requ
 			third_robot_monitor::TeleportAbsolute::Response &res)
 {
 	geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(req.theta);
+	geometry_msgs::TransformStamped odom_trans;
+	odom_trans.header.stamp = ros::Time::now();
+	odom_trans.header.frame_id = "monitor_odom";
+	odom_trans.child_frame_id = "monitor_base_link";
+	odom_trans.transform.translation.x = req.x;
+	odom_trans.transform.translation.y = req.y;
+	odom_trans.transform.translation.z = 0.0;
+	odom_trans.transform.rotation = odom_quat;
+	
+	monitor_odom_broadcaster_.sendTransform(odom_trans);
+	  
 	odom_.header.stamp = ros::Time::now();
 	odom_.pose.pose.position.x = req.x;
 	odom_.pose.pose.position.y = req.y;
 	odom_.pose.pose.position.z = 0.0;
 	odom_.pose.pose.orientation = odom_quat;
 	monitor_pub_.publish(odom_);
+	
 	std::cout<<"pos: "<<req.x<<" "<<req.y<<" "<<req.theta<<std::endl;
 	return true;
 }

@@ -13,6 +13,8 @@ public:
 	{
 		ros::NodeHandle n("~");
 
+		odom_.header.frame_id = "monitor_odom";
+
 		monitor_pub_ = nh_.advertise<nav_msgs::Odometry>("/monitor_odom", 1);
 		server_ = nh_.advertiseService<third_robot_monitor::TeleportAbsolute::Request,
 									   third_robot_monitor::TeleportAbsolute::Response>
@@ -24,12 +26,20 @@ private:
 	ros::NodeHandle nh_;
 	ros::Publisher monitor_pub_;
 	ros::ServiceServer server_;
+	nav_msgs::Odometry odom_;
 };
 
 
 bool ThirdRobotMonitorServer::getPos(third_robot_monitor::TeleportAbsolute::Request  &req,
 			third_robot_monitor::TeleportAbsolute::Response &res)
-{	
+{
+	geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(req.theta);
+	odom_.header.stamp = ros::Time::now();
+	odom_.pose.pose.position.x = req.x;
+	odom_.pose.pose.position.y = req.y;
+	odom_.pose.pose.position.z = 0.0;
+	odom_.pose.pose.orientation = odom_quat;
+	monitor_pub_.publish(odom_);
 	std::cout<<"pos: "<<req.x<<" "<<req.y<<" "<<req.theta<<std::endl;
 	return true;
 }

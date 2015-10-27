@@ -16,7 +16,7 @@ rosrun third_robot_monitor third_robot_monitor_client
 ## parameters
 - `/config/third_robot_monitor.yaml`
 - ratio: 0.2
-  - 元画像ファイルを表示する際の縮小率。
+  - 元画像ファイルを表示する際の初期縮小率。
 
 ## command
 - 地図画像をアクティブにした状態で下記キーを入力するとモードを切り替えられます。

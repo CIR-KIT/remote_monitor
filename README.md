@@ -3,7 +3,7 @@
 ### service server
 - `map_server`で`/image`と`/resolution`パラメータを登録した状態にして下さい。
 - `/hogehoge/image`の場合は引数`ns`で指定して下さい。
-- 地図ファイルを見に行くフォルダは`hogehoge/TC2015/third_robot/third_robot_2dnav/map/*`です。
+- 地図ファイルを見に行くフォルダは`path_to_ws/TC2015/third_robot/third_robot_2dnav/map/*`です。
 ```
 roslaunch third_robot_monitor third_robot_monitor_server.launch ns:=hogehoge
 ```

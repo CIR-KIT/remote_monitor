@@ -1,11 +1,12 @@
 # third_robot_monitor
 ## How to launch
 ### service server
+- パラメータサーバに`image`を登録した状態にして下さい。
+- `/hogehoge/image`の場合は引数`ns`で指定して下さい。
+- 地図ファイルを見に行くフォルダは`hogehoge/TC2015/third_robot/third_robot_2dnav/map/*`です。
 ```
-roslaunch third_robot_monitor third_robot_monitor_server.launch
-roslaunch third_robot_monitor third_robot_monitor_server.launch map_file_name.yaml
+roslaunch third_robot_monitor third_robot_monitor_server.launch ns:=hogehoge
 ```
-- 見に行くフォルダは`hogehoge/TC2015/third_robot/third_robot_2dnav/map/*`です。
 
 ### service client
 ```

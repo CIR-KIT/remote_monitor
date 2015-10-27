@@ -1,0 +1,7 @@
+<launch>
+    <arg name="ns" default="third_robot_monitor_server" />
+    <node pkg="third_robot_monitor" name="$(arg ns)" type="third_robot_monitor_server" output="screen" 
+        args="$(find third_robot_2dnav) $(arg ns)" >
+        <rosparam command="load" file="$(find third_robot_2dnav)/map/201510240538.yaml" />
+    </node>
+</launch>

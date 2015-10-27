@@ -14,6 +14,7 @@ rosrun third_robot_monitor third_robot_monitor_client
 ```
 
 ## parameters
+- `/config/third_robot_monitor.yaml`
 - ratio: 0.2
   - 元画像ファイルを表示する際の縮小率。
 

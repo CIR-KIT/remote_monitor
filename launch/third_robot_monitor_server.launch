@@ -1,9 +1,9 @@
 <launch>
-    <arg name="map_yaml" default="201510240538.yaml" />
+    <!-- <arg name="map_yaml" default="201510240538.yaml" /> -->
     <arg name="ns" default="third_robot_monitor_server" />
     <node pkg="third_robot_monitor" name="$(arg ns)" type="third_robot_monitor_server" output="screen" 
         args="$(find third_robot_2dnav) $(arg ns)" >
         <rosparam command="load" file="$(find third_robot_monitor)/config/third_robot_monitor.yaml" />
-        <rosparam command="load" file="$(find third_robot_2dnav)/map/$(arg map_yaml)" />
+        <!--<rosparam command="load" file="$(find third_robot_2dnav)/map/$(arg map_yaml)" />->>
     </node>
 </launch>

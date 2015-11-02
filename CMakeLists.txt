@@ -120,17 +120,20 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+find_package( OpenCV REQUIRED )
+
+
 ## Declare a C++ library
 # add_library(third_robot_monitor
 #   src/${PROJECT_NAME}/third_robot_monitor.cpp
 # )
 
 add_executable(third_robot_monitor_server src/monitor_server.cpp)
-target_link_libraries(third_robot_monitor_server ${catkin_LIBRARIES})
+target_link_libraries(third_robot_monitor_server ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(third_robot_monitor_server third_robot_monitor_gencpp)
 
 add_executable(third_robot_monitor_client src/monitor_client.cpp)
-target_link_libraries(third_robot_monitor_client ${catkin_LIBRARIES})
+target_link_libraries(third_robot_monitor_client ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(third_robot_monitor_client third_robot_monitor_gencpp)
 
 

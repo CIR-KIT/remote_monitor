@@ -63,8 +63,8 @@ public:
         double y_map_center = map_img_pos_curr_.rows - req.y / map_resolution_ * resize_ratio_curr_;
         point_curr_ = cv::Point(x_map_center, y_map_center);
         //-- arrow tip that represents the robot orientation on the map
-        double x_map_tip = x_map_center + ARROW_LENGTH * cv::cos(req.theta);
-        double y_map_tip = y_map_center - ARROW_LENGTH * cv::sin(req.theta);
+        double x_map_tip = x_map_center + ARROW_LENGTH * std::cos(req.theta);
+        double y_map_tip = y_map_center - ARROW_LENGTH * std::sin(req.theta);
         point_tip_ = cv::Point(x_map_tip, y_map_tip);
         //-- draw
         cv::circle(map_img_pos_curr_, point_curr_, 2, RED, 3);

@@ -1,8 +1,16 @@
 # third_robot_monitor
 遠隔監視用のパッケージです．
 
-## Demo
+## Demo Video
 [![IMAGE ALT TEXT HERE](./.image/third_robot_monitor.png)](https://youtu.be/hpAnaV-bylQ)
+
+下記のコマンドで上記動画のように遊べるはずです
+
+```bash
+$ roslaunch third_robot_2dnav_gazebo autorun.launch 
+$ roslaunch third_robot_monitor third_robot_monitor_server.launch gazebo:=true map_yaml:=playpen_map.yaml
+$ roslaunch third_robot_monitor third_robot_monitor_client.launch 
+```
 
 ## Nodes
 ### monitor_server

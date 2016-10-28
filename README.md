@@ -1,4 +1,17 @@
 # third_robot_monitor
+遠隔監視用のパッケージです．
+
+## Demo
+[![IMAGE ALT TEXT HERE](./.image/third_robot_monitor.png)](https://youtu.be/hpAnaV-bylQ)
+
+## Nodes
+### monitor_server
+ - 遠隔監視PC側`node`．`service`で受信した位置と姿勢を地図上に表示させる
+
+### monitor_client
+ - 移動ロボット側`node`．一定距離毎に現在位置と姿勢を`service`で送信する．
+ - デフォルトでは`/amcl_pose`を`subscribe`する．
+ 
 ## How to launch
 ### service server
 - 地図の在処として，下記のパッケージ配下のフォルダを見に行きます．

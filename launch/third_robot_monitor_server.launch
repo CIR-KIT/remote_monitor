@@ -1,9 +1,15 @@
 <launch>
-    <!-- <arg name="map_yaml" default="201510240538.yaml" /> -->
+    <arg name="map_yaml" default="playpen_map.yaml" />
     <arg name="ns" default="third_robot_monitor_server" />
+
+    <arg name="gazebo" default="false" />
+    <arg unless="$(arg gazebo)" name="map_package" default="$(find third_robot_2dnav)" />
+    <arg     if="$(arg gazebo)" name="map_package" default="$(find third_robot_2dnav_gazebo)" />
+
     <node pkg="third_robot_monitor" name="$(arg ns)" type="third_robot_monitor_server" output="screen" 
-        args="$(find third_robot_2dnav) $(arg ns)" >
-        <rosparam command="load" file="$(find third_robot_monitor)/config/third_robot_monitor.yaml" />
-        <!--<rosparam command="load" file="$(find third_robot_2dnav)/map/$(arg map_yaml)" />-->
+        args="$(arg map_package) $(arg ns)" >
+        <!--rosparam command="load" file="$(find third_robot_monitor)/config/third_robot_monitor.yaml" /-->
+        <param name="ratio" value="1.0" />
+        <rosparam command="load" file="$(arg map_package)/map/$(arg map_yaml)" />
     </node>
 </launch>

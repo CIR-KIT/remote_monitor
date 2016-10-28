@@ -11,6 +11,7 @@ const static std::string PARAM_NAME_RATIO_PARAM = "/ratio";
 const static std::string MAP_PATH = "/map/";
 const static std::string PARAM_NAME_MAP_NAME = "/image";
 const static std::string PARAM_NAME_MAP_RESOLUTION = "/resolution";
+const static std::string PARAM_NAME_MAP_ORIGIN = "/origin";
 const static std::string MAP_WINDOW_NAME = "Map Monitor";
 const static int ROS_SPIN_RATE = 100;
 const static int CV_WAIT_KEY_RATE = 50;
@@ -29,6 +30,19 @@ enum WAIT_KEY_MODE
     QUIT
 };
 
+enum RESULT
+{
+    OK,
+    NG
+};
+
+enum MAP_COORD
+{
+    INDEX_X,
+    INDEX_Y,
+    INDEX_Z
+};
+
 
 class ThirdRobotMonitorServer
 {
@@ -41,17 +55,12 @@ public:
     {
         //ros::NodeHandle n("~");
         //rate_ = ROS_SPIN_RATE;
+        map_origin_.clear();
         server_ = nh_.advertiseService<third_robot_monitor::TeleportAbsolute::Request,
                 third_robot_monitor::TeleportAbsolute::Response>
                 ("third_robot_monitor", boost::bind(&ThirdRobotMonitorServer::getPos, this, _1, _2));
 
         this->LoadRosParam(i_image_path, i_name_space);
-        map_img_ori_ = cv::imread(image_path_);
-
-        // resize
-        cv::resize(map_img_ori_, map_img_ori_small_, cv::Size(), resize_ratio_curr_, resize_ratio_curr_, cv::INTER_LINEAR);
-        map_img_pos_curr_ = map_img_ori_small_.clone();
-        map_img_pos_hist_ = map_img_ori_small_.clone();
     }
 
     void DrawPosOnMap(third_robot_monitor::TeleportAbsolute::Request &req)
@@ -59,8 +68,8 @@ public:
         // only current pos
         map_img_ori_small_.copyTo(map_img_pos_curr_);
         //-- center of the robot on the map
-        double x_map_center = req.x * resize_ratio_curr_ / map_resolution_;
-        double y_map_center = map_img_pos_curr_.rows - req.y / map_resolution_ * resize_ratio_curr_;
+        double x_map_center = (req.x - map_origin_[INDEX_X]) * resize_ratio_curr_ / map_resolution_;
+        double y_map_center = map_img_pos_curr_.rows - (req.y - map_origin_[INDEX_Y]) / map_resolution_ * resize_ratio_curr_;
         point_curr_ = cv::Point(x_map_center, y_map_center);
         //-- arrow tip that represents the robot orientation on the map
         double x_map_tip = x_map_center + ARROW_LENGTH * std::cos(req.theta);
@@ -110,10 +119,6 @@ public:
 
             // resize
             // resize
-            /*
-            cv::resize(map_img_pos_curr_, map_img_pos_curr_, cv::Size(), resize_ratio_prev_/resize_ratio_curr_, resize_ratio_prev_/resize_ratio_curr_, cv::INTER_LINEAR);
-            cv::resize(map_img_pos_hist_, map_img_pos_hist_, cv::Size(), resize_ratio_prev_/resize_ratio_curr_, resize_ratio_prev_/resize_ratio_curr_, cv::INTER_LINEAR);
-            */
             cv::resize(map_img_ori_, map_img_ori_small_, cv::Size(), resize_ratio_curr_, resize_ratio_curr_, cv::INTER_LINEAR);
             map_img_pos_curr_ = map_img_ori_small_.clone();
             map_img_pos_hist_ = map_img_ori_small_.clone();
@@ -128,10 +133,6 @@ public:
             ret = state_;
 
             // resize
-            /*
-            cv::resize(map_img_pos_curr_, map_img_pos_curr_, cv::Size(), resize_ratio_prev_/resize_ratio_curr_, resize_ratio_prev_/resize_ratio_curr_, cv::INTER_LINEAR);
-            cv::resize(map_img_pos_hist_, map_img_pos_hist_, cv::Size(), resize_ratio_prev_/resize_ratio_curr_, resize_ratio_prev_/resize_ratio_curr_, cv::INTER_LINEAR);
-            */
             cv::resize(map_img_ori_, map_img_ori_small_, cv::Size(), resize_ratio_curr_, resize_ratio_curr_, cv::INTER_LINEAR);
             map_img_pos_curr_ = map_img_ori_small_.clone();
             map_img_pos_hist_ = map_img_ori_small_.clone();
@@ -189,29 +190,46 @@ public:
       }
     }
 
+    int LoadMapImage()
+    {
+        map_img_ori_ = cv::imread(image_path_);
+
+        if(map_img_ori_.rows == 0 || map_img_ori_.cols == 0)
+        {
+          ROS_ERROR("image path is %s was not found.", image_path_.c_str());
+          return NG;
+        }
+
+        ROS_INFO("image %s was successfully loaded.", image_path_.c_str());
+        // resize
+        cv::resize(map_img_ori_, map_img_ori_small_, cv::Size(), resize_ratio_curr_, resize_ratio_curr_, cv::INTER_LINEAR);
+        map_img_pos_curr_ = map_img_ori_small_.clone();
+        map_img_pos_hist_ = map_img_ori_small_.clone();
+    }
+
 private:
     void LoadRosParam(const std::string i_image_path, const std::string i_name_space)
     {
         // map file name
         image_path_ = i_image_path + MAP_PATH;
-        std::string param_name_image_name = i_name_space + PARAM_NAME_MAP_NAME;
-        nh_.param<std::string>(param_name_image_name, image_name_, DEFAULT_MAP_NAME);
+        nh_.param<std::string>(i_name_space + PARAM_NAME_MAP_NAME, image_name_, DEFAULT_MAP_NAME);
         image_path_ += image_name_;
-        printf("path is %s\n", image_path_.c_str());
+        ROS_INFO("image path is %s.", image_path_.c_str());
 
         // resize_ratio
-        std::string param_name_ratio = i_name_space + PARAM_NAME_RATIO_PARAM;
-        nh_.param(param_name_ratio, resize_ratio_curr_, DEFAULT_RESIZE_RATIO);
-
+        nh_.param(i_name_space + PARAM_NAME_RATIO_PARAM, resize_ratio_curr_, DEFAULT_RESIZE_RATIO);
         // resolution
-        std::string param_name_resolution = i_name_space + PARAM_NAME_MAP_RESOLUTION;
-        nh_.param(param_name_resolution, map_resolution_, DEFAULT_MAP_RESOLUTION);
-    }
+        nh_.param(i_name_space + PARAM_NAME_MAP_RESOLUTION, map_resolution_, DEFAULT_MAP_RESOLUTION);
+        // origin(array)
+        XmlRpc::XmlRpcValue origin_list;
+        nh_.getParam(i_name_space + PARAM_NAME_MAP_ORIGIN, origin_list);
+        ROS_ASSERT(origin_list.getType() == XmlRpc::XmlRpcValue::TypeArray);
 
-    cv::Mat LoadMapImage()
-    {
-        cv::Mat map_img_ori = cv::imread(image_path_);
-        cv::resize(map_img_ori, map_img_ori_small_, cv::Size(), resize_ratio_curr_, resize_ratio_curr_, cv::INTER_LINEAR);
+        for (int32_t i = 0; i < origin_list.size(); ++i)
+        {
+            ROS_ASSERT(origin_list[i].getType() == XmlRpc::XmlRpcValue::TypeDouble);
+            map_origin_.push_back(static_cast<double>(origin_list[i]));
+        }
     }
 
 private:
@@ -223,6 +241,7 @@ private:
     double resize_ratio_curr_;
     double resize_ratio_prev_;
     double map_resolution_;
+    std::vector<double> map_origin_;
     cv::Point point_curr_;
     cv::Point point_tip_;
     // images
@@ -251,7 +270,23 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "third_robot_monitor_server");
 
-    ThirdRobotMonitorServer monitor_server(argv[1], argv[2]);
+    if(argc < 3)
+    {
+        ROS_ERROR("Short of arguments. map package path and namespace must be given.");
+        ROS_ERROR("Aborting third_robot_monitor_server...");
+        return -1;
+    }
+
+    std::string map_package_path = argv[1];
+    std::string ns = argv[2];
+    ThirdRobotMonitorServer monitor_server(map_package_path, ns);
+
+    if(monitor_server.LoadMapImage() == NG)
+    {
+        ROS_ERROR("Aborting third_robot_monitor_server...");
+        return -1;
+    }
+
     monitor_server.RunMainLoop();
     //ros::spin();
 

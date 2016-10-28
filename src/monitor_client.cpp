@@ -11,13 +11,16 @@ public:
 	void sendPosition(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose);
 	
 public:
-	ThirdRobotMonitorClient() : rate_(1.0)
+    ThirdRobotMonitorClient(const std::string _ns) : rate_(1.0), ns_(_ns)
 	{
-		ros::NodeHandle n("~");
-		n.param("dist_th", dist_th_, 5.0);
+        ros::NodeHandle n(ns_);
+        n.param("interval_dist", interval_dist_, 5.0);
+        n.param("pose_topic", pose_topic_, std::string("/amcl_pose2"));
+        ROS_INFO("interval_dist = %.2f.", interval_dist_);
+        ROS_INFO("pose_topic = %s.", pose_topic_.c_str());
 
-		monitor_client_ = nh_.serviceClient<third_robot_monitor::TeleportAbsolute>("third_robot_monitor");
-		odom_sub_ = nh_.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/amcl_pose", 1, boost::bind(&ThirdRobotMonitorClient::sendPosition, this, _1));
+        monitor_client_ = nh_.serviceClient<third_robot_monitor::TeleportAbsolute>("third_robot_monitor");
+        odom_sub_ = nh_.subscribe<geometry_msgs::PoseWithCovarianceStamped>(pose_topic_, 1, boost::bind(&ThirdRobotMonitorClient::sendPosition, this, _1));
 	}
 
 	
@@ -44,13 +47,15 @@ private:
 
 	geometry_msgs::PoseWithCovariance last_pose_;
 
-	double dist_th_;
+    std::string ns_;
+    double interval_dist_;
+    std::string pose_topic_;
 };
 
 void ThirdRobotMonitorClient::sendPosition(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose)
 	{
 		double dist = calculateDistance(amcl_pose->pose);
-		if(dist >= dist_th_)
+        if(dist >= interval_dist_)
 		{
 			double yaw, pitch, roll;
 			getRPY(amcl_pose->pose.pose.orientation, roll, pitch, yaw);
@@ -73,8 +78,14 @@ void ThirdRobotMonitorClient::sendPosition(const geometry_msgs::PoseWithCovarian
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "third_robot_monitor_client");
-	
-	ThirdRobotMonitorClient client;
+
+    std::string ns;
+    if(argc > 1)
+        ns = argv[1];
+    else
+        ns = "third_robot_monitor_client";
+
+    ThirdRobotMonitorClient client(ns);
 	
 	ros::spin();
 	

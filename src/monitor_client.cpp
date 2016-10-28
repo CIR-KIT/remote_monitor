@@ -15,7 +15,7 @@ public:
 	{
         ros::NodeHandle n(ns_);
         n.param("interval_dist", interval_dist_, 5.0);
-        n.param("pose_topic", pose_topic_, std::string("/amcl_pose2"));
+        n.param("pose_topic", pose_topic_, std::string("/amcl_pose"));
         ROS_INFO("interval_dist = %.2f.", interval_dist_);
         ROS_INFO("pose_topic = %s.", pose_topic_.c_str());
 

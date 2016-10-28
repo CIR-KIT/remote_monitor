@@ -1,23 +1,38 @@
 # third_robot_monitor
 ## How to launch
 ### service server
-- `map_server`で`/image`と`/resolution`パラメータを登録した状態にして下さい。
-- `/hogehoge/image`の場合は引数`ns`で指定して下さい。
-- 地図ファイルを見に行くフォルダは`path_to_ws/TC2015/third_robot/third_robot_2dnav/map/*`です。
+- 地図の在処として，下記のパッケージ配下のフォルダを見に行きます．
+  - 実機: `$(find third_robot_2dnav)/map/`
+  - Gazebo: `$(find third_robot_2dnav_gazebo)/map/`
+- 地図名は引数で指定して下さい．
+
+- 実機の場合のコマンド
+
+```bash
+$ roslaunch third_robot_monitor third_robot_monitor_server.launch map_yaml:=hogehoge.yaml
 ```
-roslaunch third_robot_monitor third_robot_monitor_server.launch ns:=hogehoge
+
+- `Gazebo`の場合のコマンド
+```
+roslaunch third_robot_monitor third_robot_monitor_server.launch map_yaml:=hogehoge.yaml gazebo:=true
 ```
 
 ### service client
 ```
-rosrun third_robot_monitor third_robot_monitor_client
+roslaunch third_robot_monitor third_robot_monitor_client.launch
 ```
 
 ## parameters
-- `/config/third_robot_monitor.yaml`
-- ratio: 0.2
-  - 元画像ファイルを表示する際の初期縮小率。
+- `/config/third_robot_monitor_server.yaml`
+  - ratio: 0.2
+    - 元画像ファイルを表示する際の初期縮小率。
 
+- `/config/third_robot_client.yaml`
+  - interval_dist: 1.0
+    - 現在地を送る周期(距離[m]毎)
+  - pose_topic: `amcl_pose`
+    - `subscribe`するトピック名
+    
 ## command
 - 地図画像をアクティブにした状態で下記キーを入力するとモードを切り替えられます。
 - `c`: current

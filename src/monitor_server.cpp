@@ -336,8 +336,10 @@ int fillPolygonAndShow()
 
 int main(int argc, char **argv)
 {
+    /*
     if (fillPolygonAndShow() == -1)
         return -1;
+        */
 
     ros::init(argc, argv, "third_robot_monitor_server");
 

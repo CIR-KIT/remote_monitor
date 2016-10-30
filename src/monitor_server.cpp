@@ -16,7 +16,8 @@ const static std::string MAP_WINDOW_NAME = "Map Monitor";
 const static int ROS_SPIN_RATE = 100;
 const static int CV_WAIT_KEY_RATE = 50;
 const static cv::Scalar RED = cv::Scalar(0, 0, 255);
-const static cv::Scalar BLUE = cv::Scalar(0, 255, 0);
+const static cv::Scalar GREEN = cv::Scalar(0, 255, 0);
+const static cv::Scalar BLUE = cv::Scalar(255, 0, 0);
 const static int ARROW_LENGTH = 10;
 
 // default
@@ -305,8 +306,39 @@ bool ThirdRobotMonitorServer::getHumanPose(third_robot_monitor::TeleportAbsolute
     return true;
 }
 
+int fillPolygonAndShow()
+{
+    int w = 800;
+    cv::Mat img = cv::Mat::zeros( w, w, CV_8UC3 );
+    int lineType = 8;
+
+    /** Create some points */
+    cv::Point rook_points[1][4];
+    rook_points[0][0] = cv::Point(w*0.5, 0.0);
+    rook_points[0][1] = cv::Point(0, w);
+    rook_points[0][2] = cv::Point(w*0.5, w*0.7);
+    rook_points[0][3] = cv::Point(w, w);
+
+    const cv::Point* ppt[1] = { rook_points[0] };
+    int npt[] = { 4 };
+
+    cv::fillPoly( img, ppt, npt, 1, GREEN, lineType );
+
+    cv::Point2f center(img.cols*0.5, img.rows*0.5);
+    //const cv::Mat affine_matrix = cv::getRotationMatrix2D( center, angle, scale );
+
+    cv::imshow("test", img);
+    int key = cv::waitKey();
+
+    if(key == 27 || key == 'q' || key == 'Q')
+        return -1;
+}
+
 int main(int argc, char **argv)
 {
+    if (fillPolygonAndShow() == -1)
+        return -1;
+
     ros::init(argc, argv, "third_robot_monitor_server");
 
     if(argc < 3)

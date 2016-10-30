@@ -19,7 +19,7 @@ public:
         ROS_INFO("interval_dist = %.2f.", interval_dist_);
         ROS_INFO("pose_topic = %s.", pose_topic_.c_str());
 
-        monitor_client_ = nh_.serviceClient<third_robot_monitor::TeleportAbsolute>("third_robot_monitor");
+        monitor_client_ = nh_.serviceClient<third_robot_monitor::TeleportAbsolute>("third_robot_monitor_robot_pose");
         odom_sub_ = nh_.subscribe<geometry_msgs::PoseWithCovarianceStamped>(pose_topic_, 1, boost::bind(&ThirdRobotMonitorClient::sendPosition, this, _1));
 	}
 

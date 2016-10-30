@@ -16,6 +16,7 @@ const static std::string MAP_WINDOW_NAME = "Map Monitor";
 const static int ROS_SPIN_RATE = 100;
 const static int CV_WAIT_KEY_RATE = 50;
 const static cv::Scalar RED = cv::Scalar(0, 0, 255);
+const static cv::Scalar BLUE = cv::Scalar(0, 255, 0);
 const static int ARROW_LENGTH = 10;
 
 // default
@@ -47,8 +48,10 @@ enum MAP_COORD
 class ThirdRobotMonitorServer
 {
 public:
-    bool getPos(third_robot_monitor::TeleportAbsolute::Request  &req,
-                third_robot_monitor::TeleportAbsolute::Response &res);
+    bool getRobotPose(third_robot_monitor::TeleportAbsolute::Request  &req,
+                      third_robot_monitor::TeleportAbsolute::Response &res);
+    bool getHumanPose(third_robot_monitor::TeleportAbsolute::Request  &req,
+                      third_robot_monitor::TeleportAbsolute::Response &res);
 
     ThirdRobotMonitorServer(const std::string i_image_path, const std::string i_name_space)
        : rate_(ROS_SPIN_RATE), state_(CURR_POSITON)
@@ -56,14 +59,17 @@ public:
         //ros::NodeHandle n("~");
         //rate_ = ROS_SPIN_RATE;
         map_origin_.clear();
-        server_ = nh_.advertiseService<third_robot_monitor::TeleportAbsolute::Request,
+        server_robot_pose_ = nh_.advertiseService<third_robot_monitor::TeleportAbsolute::Request,
                 third_robot_monitor::TeleportAbsolute::Response>
-                ("third_robot_monitor", boost::bind(&ThirdRobotMonitorServer::getPos, this, _1, _2));
+                ("third_robot_monitor_robot_pose", boost::bind(&ThirdRobotMonitorServer::getRobotPose, this, _1, _2));
+        server_human_pose_ = nh_.advertiseService<third_robot_monitor::TeleportAbsolute::Request,
+                third_robot_monitor::TeleportAbsolute::Response>
+                ("third_robot_monitor_human_pose", boost::bind(&ThirdRobotMonitorServer::getHumanPose, this, _1, _2));
 
-        this->LoadRosParam(i_image_path, i_name_space);
+        this->loadRosParam(i_image_path, i_name_space);
     }
 
-    void DrawPosOnMap(third_robot_monitor::TeleportAbsolute::Request &req)
+    void drawRobotPoseOnMap(third_robot_monitor::TeleportAbsolute::Request &req)
     {
         // only current pos
         map_img_ori_small_.copyTo(map_img_pos_curr_);
@@ -84,7 +90,28 @@ public:
         cv::line(map_img_pos_hist_, point_curr_, point_tip_, RED, 2);
     }
 
-    int WaitKeyJudge(const int i_key)
+    void drawHumanPoseOnMap(third_robot_monitor::TeleportAbsolute::Request &req)
+    {
+        // only current pos
+        map_img_ori_small_.copyTo(map_img_pos_curr_);
+        //-- center of the robot on the map
+        double x_map_center = (req.x - map_origin_[INDEX_X]) * resize_ratio_curr_ / map_resolution_;
+        double y_map_center = map_img_pos_curr_.rows - (req.y - map_origin_[INDEX_Y]) / map_resolution_ * resize_ratio_curr_;
+        point_curr_ = cv::Point(x_map_center, y_map_center);
+        //-- arrow tip that represents the robot orientation on the map
+        double x_map_tip = x_map_center + ARROW_LENGTH * std::cos(req.theta);
+        double y_map_tip = y_map_center - ARROW_LENGTH * std::sin(req.theta);
+        point_tip_ = cv::Point(x_map_tip, y_map_tip);
+        //-- draw
+        cv::circle(map_img_pos_curr_, point_curr_, 2, BLUE, 3);
+        cv::line(map_img_pos_curr_, point_curr_, point_tip_, BLUE, 2);
+
+        // all pos history
+        cv::circle(map_img_pos_hist_, point_curr_, 2, BLUE, 3);
+        cv::line(map_img_pos_hist_, point_curr_, point_tip_, BLUE, 2);
+    }
+
+    int waitKeyJudge(const int i_key)
     {
         int ret = 0;
 
@@ -123,7 +150,7 @@ public:
             map_img_pos_curr_ = map_img_ori_small_.clone();
             map_img_pos_hist_ = map_img_ori_small_.clone();
 
-            DrawPosOnMap(req_);
+            drawRobotPoseOnMap(req_);
         }
         // fade
         else if(i_key == 'm' || i_key == 'M')
@@ -137,7 +164,7 @@ public:
             map_img_pos_curr_ = map_img_ori_small_.clone();
             map_img_pos_hist_ = map_img_ori_small_.clone();
 
-            DrawPosOnMap(req_);
+            drawRobotPoseOnMap(req_);
         }
         // 'Esc' or 'q'が押された場合に終了
         else if(i_key == 27 || i_key == 'q' || i_key == 'Q')
@@ -153,7 +180,7 @@ public:
         return ret;
     }
 
-    void ShowMap()
+    void showMap()
     {
         // current pose
         if(state_ == CURR_POSITON)
@@ -171,26 +198,26 @@ public:
         }
     }
 
-    void RunMainLoop()
+    void runMainLoop()
     {
       while(nh_.ok())
       {
           //cv::imshow(MAP_WINDOW_NAME, map_img_pos_curr_);
           int key = cv::waitKey(CV_WAIT_KEY_RATE);
           if(key >= 0)
-              state_ = WaitKeyJudge(key);
+              state_ = waitKeyJudge(key);
 
           if(state_ == QUIT)
               break;
           else
-              ShowMap();
+              showMap();
 
           ros::spinOnce();
           rate_.sleep();
       }
     }
 
-    int LoadMapImage()
+    int loadMapImage()
     {
         map_img_ori_ = cv::imread(image_path_);
 
@@ -208,7 +235,7 @@ public:
     }
 
 private:
-    void LoadRosParam(const std::string i_image_path, const std::string i_name_space)
+    void loadRosParam(const std::string i_image_path, const std::string i_name_space)
     {
         // map file name
         image_path_ = i_image_path + MAP_PATH;
@@ -235,7 +262,8 @@ private:
 private:
     ros::NodeHandle nh_;
     ros::Rate rate_;
-    ros::ServiceServer server_;
+    ros::ServiceServer server_robot_pose_;
+    ros::ServiceServer server_human_pose_;
     std::string image_path_;
     std::string image_name_;
     double resize_ratio_curr_;
@@ -255,13 +283,24 @@ private:
 };
 
 
-bool ThirdRobotMonitorServer::getPos(third_robot_monitor::TeleportAbsolute::Request  &req,
-                                     third_robot_monitor::TeleportAbsolute::Response &res)
+bool ThirdRobotMonitorServer::getRobotPose(third_robot_monitor::TeleportAbsolute::Request  &req,
+                                           third_robot_monitor::TeleportAbsolute::Response &res)
 {
-    ROS_INFO("Pos: [x] -> %6.2f, [y] -> %6.2f, [theta] -> %6.2f", req.x, req.y, req.theta);
+    ROS_INFO("RobotPose: [x] -> %6.2f, [y] -> %6.2f, [theta] -> %6.2f", req.x, req.y, req.theta);
 
     req_ = req;
-    DrawPosOnMap(req);
+    drawRobotPoseOnMap(req);
+
+    return true;
+}
+
+bool ThirdRobotMonitorServer::getHumanPose(third_robot_monitor::TeleportAbsolute::Request  &req,
+                                           third_robot_monitor::TeleportAbsolute::Response &res)
+{
+    ROS_INFO("HumanPose: [x] -> %6.2f, [y] -> %6.2f, [theta] -> %6.2f", req.x, req.y, req.theta);
+
+    req_ = req;
+    drawHumanPoseOnMap(req);
 
     return true;
 }
@@ -281,14 +320,13 @@ int main(int argc, char **argv)
     std::string ns = argv[2];
     ThirdRobotMonitorServer monitor_server(map_package_path, ns);
 
-    if(monitor_server.LoadMapImage() == NG)
+    if(monitor_server.loadMapImage() == NG)
     {
         ROS_ERROR("Aborting third_robot_monitor_server...");
         return -1;
     }
 
-    monitor_server.RunMainLoop();
-    //ros::spin();
+    monitor_server.runMainLoop();
 
     return 0;
 }

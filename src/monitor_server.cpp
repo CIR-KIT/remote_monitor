@@ -72,20 +72,19 @@ public:
 
     void drawRobotPoseOnMap(third_robot_monitor::TeleportAbsolute::Request &req)
     {
-        const cv::Point3f robot_pos(req.x, req.y, req.theta);
         // only current point
-        drawArrow(map_img_pos_curr_, robot_pos);
+        drawArrow(map_img_pos_curr_, req);
         // all pos history
-        drawArrow(map_img_pos_hist_, robot_pos);
+        drawArrow(map_img_pos_hist_, req);
     }
 
-    void drawArrow(cv::Mat &img, const cv::Point3f pos)
+    void drawArrow(cv::Mat &img, third_robot_monitor::TeleportAbsolute::Request &req)
     {
         // only current pos
         map_img_ori_small_.copyTo(map_img_pos_curr_);
         //-- center of the robot on the map
-        double x_map_center = (pos.x - map_origin_[INDEX_X]) * resize_ratio_curr_ / map_resolution_;
-        double y_map_center = map_img_pos_curr_.rows - (pos.y - map_origin_[INDEX_Y]) / map_resolution_ * resize_ratio_curr_;
+        double x_map_center = (req.x - map_origin_[INDEX_X]) * resize_ratio_curr_ / map_resolution_;
+        double y_map_center = map_img_pos_curr_.rows - (req.y - map_origin_[INDEX_Y]) / map_resolution_ * resize_ratio_curr_;
 
         int w = 10;
         int h = 15;
@@ -102,9 +101,8 @@ public:
         double p4_x_ori = (x_map_center-w*0.5) + w;
         double p4_y_ori = (y_map_center-h*0.5) + h;
 
-        double theta = pos.z;
-        double cos_rot = cos(-theta + M_PI*0.5);
-        double sin_rot = sin(-theta + M_PI*0.5);
+        double cos_rot = cos(-req.theta + M_PI*0.5);
+        double sin_rot = sin(-req.theta + M_PI*0.5);
 
         double p1_x_rot = cos_rot*(p1_x_ori-x_map_center) - sin_rot*(p1_y_ori-y_map_center);
         double p1_y_rot = sin_rot*(p1_x_ori-x_map_center) + cos_rot*(p1_y_ori-y_map_center);
@@ -143,17 +141,32 @@ public:
         double x_map_center = (req.x - map_origin_[INDEX_X]) * resize_ratio_curr_ / map_resolution_;
         double y_map_center = map_img_pos_curr_.rows - (req.y - map_origin_[INDEX_Y]) / map_resolution_ * resize_ratio_curr_;
         point_curr_ = cv::Point(x_map_center, y_map_center);
-        //-- arrow tip that represents the robot orientation on the map
-        double x_map_tip = x_map_center + ARROW_LENGTH * std::cos(req.theta);
-        double y_map_tip = y_map_center - ARROW_LENGTH * std::sin(req.theta);
-        point_tip_ = cv::Point(x_map_tip, y_map_tip);
-        //-- draw
-        cv::circle(map_img_pos_curr_, point_curr_, 2, BLUE, 3);
-        cv::line(map_img_pos_curr_, point_curr_, point_tip_, BLUE, 2);
 
+        // only current point
+        drawHuman(map_img_pos_curr_, point_curr_);
         // all pos history
-        cv::circle(map_img_pos_hist_, point_curr_, 2, BLUE, 3);
-        cv::line(map_img_pos_hist_, point_curr_, point_tip_, BLUE, 2);
+        drawHuman(map_img_pos_hist_, point_curr_);
+    }
+
+    void drawHuman(cv::Mat &img, const cv::Point2f pos)
+    {
+        const double body_len = 18.0;
+        const double arm_len = 12.0;
+        const double leg_len = 14.0;
+        cv::Point point_body = cv::Point(pos.x, pos.y + body_len);
+        cv::Point point_chest = cv::Point(pos.x, pos.y + body_len * 0.7);
+        cv::Point point_arm_r = cv::Point(pos.x + arm_len, pos.y + arm_len * 0.25);
+        cv::Point point_arm_l = cv::Point(pos.x - arm_len, pos.y + arm_len * 0.25);
+        cv::Point point_leg_r = cv::Point(pos.x + leg_len * 0.25, pos.y + body_len + leg_len);
+        cv::Point point_leg_l = cv::Point(pos.x - leg_len * 0.25, pos.y + body_len + leg_len);
+
+        //-- draw
+        cv::circle(img, point_curr_, 7, RED, -1, CV_AA);
+        cv::line(img, point_curr_, point_body, RED, 2);
+        cv::line(img, point_chest, point_arm_r, RED, 2);
+        cv::line(img, point_chest, point_arm_l, RED, 2);
+        cv::line(img, point_body, point_leg_r, RED, 2);
+        cv::line(img, point_body, point_leg_l, RED, 2);
     }
 
     int waitKeyJudge(const int i_key)
@@ -176,8 +189,7 @@ public:
             // reset
             map_img_ori_small_.copyTo(map_img_pos_hist_);
             // redraw current position
-            cv::circle(map_img_pos_hist_, point_curr_, 2, RED, 3);
-            cv::line(map_img_pos_hist_, point_curr_, point_tip_, RED, 2);
+            drawArrow(map_img_pos_curr_, req_);
 
             // keep original state
             ret = state_;
@@ -380,6 +392,7 @@ int fillPolygonAndShow()
 
 int humanDrawAndShow()
 {
+
     int w = 20;
     cv::Mat img = cv::Mat::zeros( w, w, CV_8UC3 );
     int lineType = 8;

@@ -35,13 +35,100 @@ $ roslaunch third_robot_monitor third_robot_monitor_server.launch map_yaml:=hoge
 
 - `Gazebo`の場合のコマンド
 ```
-roslaunch third_robot_monitor third_robot_monitor_server.launch map_yaml:=hogehoge.yaml gazebo:=true
+$ roslaunch third_robot_monitor third_robot_monitor_server.launch map_yaml:=hogehoge.yaml gazebo:=true
 ```
 
 ### service client
+#### 1. サーバー側のグローバルIPを設定する．
+
+- まずサーバ側の人にグローバルIPを聞く
+
+- 以下の容量で設定ファイルに反映させる．
 ```
-roslaunch third_robot_monitor third_robot_monitor_client.launch
+$ cd /etc/openvpn
+$ emacs client.conf
 ```
+
+```
+# 省略
+
+# グローバルIPアドレスを指定する．
+remote 101.102.103.xxx 1194
+
+# 省略
+```
+
+#### 2. OpenVPNを再起動する.
+
+```bash
+$ service openvpn restart
+```
+
+#### 3. ネットワークを確認する．
+
+```bash
+$ ifconfig
+```
+
+- 下記のような`tun`デバイスが表示される．少し時間がかかる場合がある．
+
+```bash
+tun0      Link encap:不明なネット  ハードウェアアドレス 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
+          inetアドレス:10.8.0.6  P-t-P:10.8.0.5  マスク:255.255.255.255
+          UP POINTOPOINT RUNNING NOARP MULTICAST  MTU:1500  メトリック:1
+          RXパケット:0 エラー:0 損失:0 オーバラン:0 フレーム:0
+          TXパケット:12 エラー:0 損失:0 オーバラン:0 キャリア:0
+          衝突(Collisions):0 TXキュー長:100 
+          RXバイト:2892 (2.8 KB)  TXバイト:504 (504.0 KB)
+```
+
+- そしてサーバにping
+
+```bash 
+$ ping 10.8.0.1
+```
+
+#### 4. ROSネットワークの設定
+
+- 必ず***全てのコンソール***で下記の設定をすること．
+
+```bash
+export ROS_MASTER_URI=http://10.8.0.6:11311
+export ROS_HOST_NAME=10.8.0.6
+export ROS_IP=10.8.0.6
+```
+
+- 下記をsourceでもよい．
+
+```bash
+roscd third_robot_monitor/scripts
+source vpn_setting_for_robot.sh
+```
+
+- 一応確認する．
+
+```bash
+$ env | grep ROS
+```
+
+#### 5. ROSネットワークの確認
+
+```bash
+$ rosservice list
+```
+
+- 下記のサービスがあることを確認する．
+
+```bash
+/third_robot_monitor_robot_pose
+/third_robot_monitor_human_pose
+```
+
+#### 6. モニタークライアントを起動する
+```bash
+$ roslaunch third_robot_monitor third_robot_monitor_client.launch
+```
+
 
 ## parameters
 - `/config/third_robot_monitor_server.yaml`

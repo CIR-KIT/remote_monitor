@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "ros/ros.h"
+#include <ros/ros.h>
 #include <nav_msgs/Odometry.h>			// odom
 #include <tf/transform_broadcaster.h>
-#include "third_robot_monitor/TeleportAbsolute.h"
+#include "remote_monitor/TeleportAbsolute.h"
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -49,10 +49,10 @@ enum MAP_COORD
 class ThirdRobotMonitorServer
 {
 public:
-    bool getRobotPose(third_robot_monitor::TeleportAbsolute::Request  &req,
-                      third_robot_monitor::TeleportAbsolute::Response &res);
-    bool getHumanPose(third_robot_monitor::TeleportAbsolute::Request  &req,
-                      third_robot_monitor::TeleportAbsolute::Response &res);
+    bool getRobotPose(remote_monitor::TeleportAbsolute::Request  &req,
+                      remote_monitor::TeleportAbsolute::Response &res);
+    bool getHumanPose(remote_monitor::TeleportAbsolute::Request  &req,
+                      remote_monitor::TeleportAbsolute::Response &res);
 
     ThirdRobotMonitorServer(const std::string i_image_path, const std::string i_name_space)
        : rate_(ROS_SPIN_RATE), state_(CURR_POSITON)
@@ -60,17 +60,17 @@ public:
         //ros::NodeHandle n("~");
         //rate_ = ROS_SPIN_RATE;
         map_origin_.clear();
-        server_robot_pose_ = nh_.advertiseService<third_robot_monitor::TeleportAbsolute::Request,
-                third_robot_monitor::TeleportAbsolute::Response>
+        server_robot_pose_ = nh_.advertiseService<remote_monitor::TeleportAbsolute::Request,
+                remote_monitor::TeleportAbsolute::Response>
                 ("third_robot_monitor_robot_pose", boost::bind(&ThirdRobotMonitorServer::getRobotPose, this, _1, _2));
-        server_human_pose_ = nh_.advertiseService<third_robot_monitor::TeleportAbsolute::Request,
-                third_robot_monitor::TeleportAbsolute::Response>
+        server_human_pose_ = nh_.advertiseService<remote_monitor::TeleportAbsolute::Request,
+                remote_monitor::TeleportAbsolute::Response>
                 ("third_robot_monitor_human_pose", boost::bind(&ThirdRobotMonitorServer::getHumanPose, this, _1, _2));
 
         this->loadRosParam(i_image_path, i_name_space);
     }
 
-    void drawRobotPoseOnMap(third_robot_monitor::TeleportAbsolute::Request &req)
+    void drawRobotPoseOnMap(remote_monitor::TeleportAbsolute::Request &req)
     {
         // only current point
         drawArrow(map_img_pos_curr_, req);
@@ -78,7 +78,7 @@ public:
         drawArrow(map_img_pos_hist_, req);
     }
 
-    void drawArrow(cv::Mat &img, third_robot_monitor::TeleportAbsolute::Request &req)
+    void drawArrow(cv::Mat &img, remote_monitor::TeleportAbsolute::Request &req)
     {
         // only current pos
         map_img_ori_small_.copyTo(map_img_pos_curr_);
@@ -133,7 +133,7 @@ public:
         cv::fillPoly( img, ppt, npt, 1, GREEN, lineType );
     }
 
-    void drawHumanPoseOnMap(third_robot_monitor::TeleportAbsolute::Request &req)
+    void drawHumanPoseOnMap(remote_monitor::TeleportAbsolute::Request &req)
     {
         // only current pos
         map_img_ori_small_.copyTo(map_img_pos_curr_);
@@ -335,13 +335,13 @@ private:
     cv::Mat map_img_pos_curr_;
     cv::Mat map_img_pos_hist_;
     // state
-    third_robot_monitor::TeleportAbsolute::Request req_;
+    remote_monitor::TeleportAbsolute::Request req_;
     int state_;
 };
 
 
-bool ThirdRobotMonitorServer::getRobotPose(third_robot_monitor::TeleportAbsolute::Request  &req,
-                                           third_robot_monitor::TeleportAbsolute::Response &res)
+bool ThirdRobotMonitorServer::getRobotPose(remote_monitor::TeleportAbsolute::Request  &req,
+                                           remote_monitor::TeleportAbsolute::Response &res)
 {
     ROS_INFO("RobotPose: [x] -> %6.2f, [y] -> %6.2f, [theta] -> %6.2f", req.x, req.y, req.theta);
 
@@ -351,8 +351,8 @@ bool ThirdRobotMonitorServer::getRobotPose(third_robot_monitor::TeleportAbsolute
     return true;
 }
 
-bool ThirdRobotMonitorServer::getHumanPose(third_robot_monitor::TeleportAbsolute::Request  &req,
-                                           third_robot_monitor::TeleportAbsolute::Response &res)
+bool ThirdRobotMonitorServer::getHumanPose(remote_monitor::TeleportAbsolute::Request  &req,
+                                           remote_monitor::TeleportAbsolute::Response &res)
 {
     ROS_INFO("HumanPose: [x] -> %6.2f, [y] -> %6.2f, [theta] -> %6.2f", req.x, req.y, req.theta);
 

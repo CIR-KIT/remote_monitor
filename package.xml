@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>third_robot_monitor</name>
-  <version>0.0.0</version>
-  <description>The third_robot_monitor package</description>
+  <name>remote_monitor</name>
+  <version>0.1.0</version>
+  <description>The remonot monitor package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->

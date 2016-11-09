@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(third_robot_monitor)
+project(remote_monitor)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -128,13 +128,13 @@ find_package( OpenCV REQUIRED )
 #   src/${PROJECT_NAME}/third_robot_monitor.cpp
 # )
 
-add_executable(third_robot_monitor_server src/monitor_server.cpp)
-target_link_libraries(third_robot_monitor_server ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(third_robot_monitor_server third_robot_monitor_gencpp)
+add_executable(remote_monitor_server src/monitor_server.cpp)
+target_link_libraries(remote_monitor_server ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_dependencies(remote_monitor_server remote_monitor_gencpp)
 
-add_executable(third_robot_monitor_client src/monitor_client.cpp)
-target_link_libraries(third_robot_monitor_client ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(third_robot_monitor_client third_robot_monitor_gencpp)
+add_executable(remote_monitor_client src/monitor_client.cpp)
+target_link_libraries(remote_monitor_client ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_dependencies(remote_monitor_client remote_monitor_gencpp)
 
 
 #############

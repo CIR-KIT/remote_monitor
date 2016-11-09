@@ -1,5 +1,5 @@
-# third_robot_monitor
-遠隔監視用のパッケージです．
+# remote_monitor
+Remote monitoring package for navigation
 
 ## Demo Video
 [![IMAGE ALT TEXT HERE](./.image/third_robot_monitor.png)](https://youtu.be/hpAnaV-bylQ)

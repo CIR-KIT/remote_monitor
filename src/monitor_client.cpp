@@ -2,7 +2,7 @@
 #include <nav_msgs/Odometry.h>			// odom
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <tf/transform_broadcaster.h>
-#include "remote_monitor/TeleportAbsolute.h"
+#include "waypoint_navigator/TeleportAbsolute.h"
 
 
 class ThirdRobotMonitorClient
@@ -19,7 +19,7 @@ public:
         ROS_INFO("interval_dist = %.2f.", interval_dist_);
         ROS_INFO("pose_topic = %s.", pose_topic_.c_str());
 
-        monitor_client_ = nh_.serviceClient<remote_monitor::TeleportAbsolute>("third_robot_monitor_robot_pose");
+        monitor_client_ = nh_.serviceClient<waypoint_navigator::TeleportAbsolute>("third_robot_monitor_robot_pose");
         odom_sub_ = nh_.subscribe<geometry_msgs::PoseWithCovarianceStamped>(pose_topic_, 1, boost::bind(&ThirdRobotMonitorClient::sendPosition, this, _1));
 	}
 
@@ -42,7 +42,7 @@ private:
 	ros::NodeHandle nh_;
 	ros::Rate rate_;
 	ros::ServiceClient monitor_client_;
-	remote_monitor::TeleportAbsolute srv_;
+	waypoint_navigator::TeleportAbsolute srv_;
 	ros::Subscriber odom_sub_;
 
 	geometry_msgs::PoseWithCovariance last_pose_;

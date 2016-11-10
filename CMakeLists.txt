@@ -132,11 +132,9 @@ find_package( OpenCV REQUIRED )
 
 add_executable(remote_monitor_server src/monitor_server.cpp)
 target_link_libraries(remote_monitor_server ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(remote_monitor_server remote_monitor_gencpp)
 
 add_executable(remote_monitor_client src/monitor_client.cpp)
 target_link_libraries(remote_monitor_client ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(remote_monitor_client remote_monitor_gencpp)
 
 
 #############

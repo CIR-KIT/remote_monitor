@@ -7,11 +7,13 @@ project(remote_monitor)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  tf
-  std_msgs
-  nav_msgs
-  genmsg
   cv_bridge
+  geometry_msgs
+  nav_msgs
+  sensor_msgs
+  std_msgs
+  tf
+  waypoint_navigator
 )
 
 ## System dependencies are found with CMake's conventions
@@ -105,7 +107,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES third_robot_monitor
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp rospy cv_bridge geometry_msgs nav_msgs sensor_msgs std_msgs tf waypoint_navigator
 #  DEPENDS system_lib
 )
 

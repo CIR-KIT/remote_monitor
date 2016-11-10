@@ -39,10 +39,13 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+
 add_executable(remote_monitor_server src/monitor_server.cpp)
+add_dependencies(remote_monitor_server waypoint_navigator_generate_messages_cpp)
 target_link_libraries(remote_monitor_server ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 add_executable(remote_monitor_client src/monitor_client.cpp)
+add_dependencies(remote_monitor_client waypoint_navigator_generate_messages_cpp)
 target_link_libraries(remote_monitor_client ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 

@@ -7,7 +7,6 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   sensor_msgs
-  std_msgs
   tf
   waypoint_navigator
 )
@@ -27,7 +26,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES third_robot_monitor
-  CATKIN_DEPENDS roscpp cv_bridge geometry_msgs nav_msgs sensor_msgs std_msgs tf waypoint_navigator
+  CATKIN_DEPENDS roscpp cv_bridge geometry_msgs nav_msgs sensor_msgs tf waypoint_navigator
   DEPENDS OpenCV Boost
 )
 

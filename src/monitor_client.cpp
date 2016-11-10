@@ -1,8 +1,8 @@
 #include "ros/ros.h"
-#include "waypoint_navigator/TeleportAbsolute.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "nav_msgs/Odometry.h"  // odom
 #include "tf/transform_broadcaster.h"
+#include "waypoint_navigator/TeleportAbsolute.h"
 
 
 class ThirdRobotMonitorClient

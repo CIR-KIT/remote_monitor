@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>remote_monitor</name>
+  <version>0.1.0</version>
+  <description>The remonot monitor package</description>
+
+  <maintainer email="k104009y@mail.kyutech.jp">Arita Yuta</maintainer>
+  <license>MIT</license>
+  <!-- <url type="website">http://wiki.ros.org/third_robot_monitor</url> -->
+
+  <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>cv_bridge</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf</depend>
+  <depend>waypoint_navigator</depend>
+  <!-- Use test_depend for packages you need only for testing: -->
+  <!--   <test_depend>gtest</test_depend> -->
+
+
+  <export>
+  </export>
+</package>

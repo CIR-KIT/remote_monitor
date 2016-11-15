@@ -10,6 +10,7 @@
 
   <url type="repository">https://github.com/CIR-KIT/remote_monitor.git</url>
   <url type="bugtracker">https://github.com/CIR-KIT/remote_monitor/issues</url>
+  <author email="cirkit.infomation@gmail.com">CIR-KIT</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>roscpp</depend>

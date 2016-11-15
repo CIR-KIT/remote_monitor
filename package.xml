@@ -5,6 +5,7 @@
   <description>The remonot monitor package</description>
 
   <maintainer email="k104009y@mail.kyutech.jp">Arita Yuta</maintainer>
+  <maintainer email="p595201m@mail.kyutech.jp">Masaru Morita</maintainer>
   <license>MIT</license>
   <!-- <url type="website">http://wiki.ros.org/third_robot_monitor</url> -->
 

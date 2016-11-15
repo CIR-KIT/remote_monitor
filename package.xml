@@ -8,7 +8,7 @@
   <license>MIT</license>
   <!-- <url type="website">http://wiki.ros.org/third_robot_monitor</url> -->
 
-  <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
+  <author email="cirkit.infomation@gmail.com">CIR-KIT</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>roscpp</depend>

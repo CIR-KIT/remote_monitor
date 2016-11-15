@@ -1,17 +1,17 @@
 #include "ros/ros.h"
-#include "waypoint_navigator/TeleportAbsolute.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "nav_msgs/Odometry.h"  // odom
 #include "tf/transform_broadcaster.h"
+#include "waypoint_navigator/TeleportAbsolute.h"
 
 
-class ThirdRobotMonitorClient
+class RemoteMonitorClient
 {
 public:
 	void sendPosition(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose);
 	
 public:
-    ThirdRobotMonitorClient(const std::string _ns) : rate_(1.0), ns_(_ns)
+    RemoteMonitorClient(const std::string _ns) : rate_(1.0), ns_(_ns)
 	{
         ros::NodeHandle n(ns_);
         n.param("interval_dist", interval_dist_, 5.0);
@@ -19,8 +19,8 @@ public:
         ROS_INFO("interval_dist = %.2f.", interval_dist_);
         ROS_INFO("pose_topic = %s.", pose_topic_.c_str());
 
-        monitor_client_ = nh_.serviceClient<waypoint_navigator::TeleportAbsolute>("third_robot_monitor_robot_pose");
-        odom_sub_ = nh_.subscribe<geometry_msgs::PoseWithCovarianceStamped>(pose_topic_, 1, boost::bind(&ThirdRobotMonitorClient::sendPosition, this, _1));
+        monitor_client_ = nh_.serviceClient<waypoint_navigator::TeleportAbsolute>("remote_monitor_robot_pose");
+        odom_sub_ = nh_.subscribe<geometry_msgs::PoseWithCovarianceStamped>(pose_topic_, 1, boost::bind(&RemoteMonitorClient::sendPosition, this, _1));
 	}
 
 	
@@ -52,7 +52,7 @@ private:
     std::string pose_topic_;
 };
 
-void ThirdRobotMonitorClient::sendPosition(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose)
+void RemoteMonitorClient::sendPosition(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose)
 	{
 		double dist = calculateDistance(amcl_pose->pose);
         if(dist >= interval_dist_)
@@ -77,15 +77,15 @@ void ThirdRobotMonitorClient::sendPosition(const geometry_msgs::PoseWithCovarian
 
 int main(int argc, char **argv)
 {
-	ros::init(argc, argv, "third_robot_monitor_client");
+	ros::init(argc, argv, "remote_monitor_client");
 
     std::string ns;
     if(argc > 1)
         ns = argv[1];
     else
-        ns = "third_robot_monitor_client";
+        ns = "remote_monitor_client";
 
-    ThirdRobotMonitorClient client(ns);
+    RemoteMonitorClient client(ns);
 	
 	ros::spin();
 	

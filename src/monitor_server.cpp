@@ -47,7 +47,7 @@ enum MAP_COORD
 };
 
 
-class ThirdRobotMonitorServer
+class RemoteMonitorServer
 {
 public:
     bool getRobotPose(waypoint_navigator::TeleportAbsolute::Request  &req,
@@ -55,7 +55,7 @@ public:
     bool getHumanPose(waypoint_navigator::TeleportAbsolute::Request  &req,
                       waypoint_navigator::TeleportAbsolute::Response &res);
 
-    ThirdRobotMonitorServer(const std::string i_image_path, const std::string i_name_space)
+    RemoteMonitorServer(const std::string i_image_path, const std::string i_name_space)
        : rate_(ROS_SPIN_RATE), state_(CURR_POSITON)
     {
         //ros::NodeHandle n("~");
@@ -63,10 +63,10 @@ public:
         map_origin_.clear();
         server_robot_pose_ = nh_.advertiseService<waypoint_navigator::TeleportAbsolute::Request,
                 waypoint_navigator::TeleportAbsolute::Response>
-                ("third_robot_monitor_robot_pose", boost::bind(&ThirdRobotMonitorServer::getRobotPose, this, _1, _2));
+                ("remote_monitor_robot_pose", boost::bind(&RemoteMonitorServer::getRobotPose, this, _1, _2));
         server_human_pose_ = nh_.advertiseService<waypoint_navigator::TeleportAbsolute::Request,
                 waypoint_navigator::TeleportAbsolute::Response>
-                ("third_robot_monitor_human_pose", boost::bind(&ThirdRobotMonitorServer::getHumanPose, this, _1, _2));
+                ("remote_monitor_human_pose", boost::bind(&RemoteMonitorServer::getHumanPose, this, _1, _2));
 
         this->loadRosParam(i_image_path, i_name_space);
     }
@@ -341,7 +341,7 @@ private:
 };
 
 
-bool ThirdRobotMonitorServer::getRobotPose(waypoint_navigator::TeleportAbsolute::Request  &req,
+bool RemoteMonitorServer::getRobotPose(waypoint_navigator::TeleportAbsolute::Request  &req,
                                            waypoint_navigator::TeleportAbsolute::Response &res)
 {
     ROS_INFO("RobotPose: [x] -> %6.2f, [y] -> %6.2f, [theta] -> %6.2f", req.x, req.y, req.theta);
@@ -352,7 +352,7 @@ bool ThirdRobotMonitorServer::getRobotPose(waypoint_navigator::TeleportAbsolute:
     return true;
 }
 
-bool ThirdRobotMonitorServer::getHumanPose(waypoint_navigator::TeleportAbsolute::Request  &req,
+bool RemoteMonitorServer::getHumanPose(waypoint_navigator::TeleportAbsolute::Request  &req,
                                            waypoint_navigator::TeleportAbsolute::Response &res)
 {
     ROS_INFO("HumanPose: [x] -> %6.2f, [y] -> %6.2f, [theta] -> %6.2f", req.x, req.y, req.theta);
@@ -427,22 +427,22 @@ int main(int argc, char **argv)
         return -1;
         */
 
-    ros::init(argc, argv, "third_robot_monitor_server");
+    ros::init(argc, argv, "remote_monitor_server");
 
     if(argc < 3)
     {
         ROS_ERROR("Short of arguments. map package path and namespace must be given.");
-        ROS_ERROR("Aborting third_robot_monitor_server...");
+        ROS_ERROR("Aborting remote_monitor_server...");
         return -1;
     }
 
     std::string map_package_path = argv[1];
     std::string ns = argv[2];
-    ThirdRobotMonitorServer monitor_server(map_package_path, ns);
+    RemoteMonitorServer monitor_server(map_package_path, ns);
 
     if(monitor_server.loadMapImage() == NG)
     {
-        ROS_ERROR("Aborting third_robot_monitor_server...");
+        ROS_ERROR("Aborting remote_monitor_server...");
         return -1;
     }
 

@@ -2,14 +2,14 @@
 Remote monitoring package for navigation
 
 ## Demo Video
-[![IMAGE ALT TEXT HERE](./.image/third_robot_monitor.png)](https://youtu.be/hpAnaV-bylQ)
+[![IMAGE ALT TEXT HERE](./.image/remote_monitor.png)](https://youtu.be/hpAnaV-bylQ)
 
 下記のコマンドで上記動画のように遊べるはずです
 
 ```bash
-$ roslaunch third_robot_2dnav_gazebo autorun.launch 
-$ roslaunch third_robot_monitor third_robot_monitor_server.launch gazebo:=true map_yaml:=playpen_map.yaml
-$ roslaunch third_robot_monitor third_robot_monitor_client.launch 
+$ roslaunch cirkit_unit03_navigation_gazebo autorun.launch 
+$ roslaunch remote_monitor remote_monitor_server.launch gazebo:=true map_yaml:=playpen_map.yaml
+$ roslaunch remote_monitor remote_monitor_client.launch 
 ```
 
 ## Nodes
@@ -23,19 +23,19 @@ $ roslaunch third_robot_monitor third_robot_monitor_client.launch
 ## How to launch
 ### service server
 - 地図の在処として，下記のパッケージ配下のフォルダを見に行きます．
-  - 実機: `$(find third_robot_2dnav)/map/`
-  - Gazebo: `$(find third_robot_2dnav_gazebo)/map/`
+  - 実機: `$(find cirkit_unit03_navigation)/map/`
+  - Gazebo: `$(find cirkit_unit03_navigation_gazebo)/map/`
 - 地図名は引数で指定して下さい．
 
 - 実機の場合のコマンド
 
 ```bash
-$ roslaunch third_robot_monitor third_robot_monitor_server.launch map_yaml:=hogehoge.yaml
+$ roslaunch remote_monitor remote_monitor_server.launch map_yaml:=hogehoge.yaml
 ```
 
 - `Gazebo`の場合のコマンド
 ```
-$ roslaunch third_robot_monitor third_robot_monitor_server.launch map_yaml:=hogehoge.yaml gazebo:=true
+$ roslaunch remote_monitor remote_monitor_server.launch map_yaml:=hogehoge.yaml gazebo:=true
 ```
 
 ### service client
@@ -101,7 +101,7 @@ export ROS_IP=10.8.0.6
 - 下記をsourceでもよい．
 
 ```bash
-roscd third_robot_monitor/scripts
+roscd remote_monitor/scripts
 source vpn_setting_for_robot.sh
 ```
 
@@ -120,18 +120,18 @@ $ rosservice list
 - 下記のサービスがあることを確認する．
 
 ```bash
-/third_robot_monitor_robot_pose
-/third_robot_monitor_human_pose
+/remote_monitor_robot_pose
+/remote_monitor_human_pose
 ```
 
 #### 6. モニタークライアントを起動する
 ```bash
-$ roslaunch third_robot_monitor third_robot_monitor_client.launch
+$ roslaunch remote_monitor remote_monitor_client.launch
 ```
 
 
 ## parameters
-- `/config/third_robot_monitor_server.yaml`
+- `/config/remote_monitor_server.yaml`
   - ratio: 0.2
     - 元画像ファイルを表示する際の初期縮小率。
 

@@ -3,8 +3,8 @@
     <arg name="ns" default="remote_monitor_server" />
 
     <arg name="gazebo" default="false" />
-    <arg unless="$(arg gazebo)" name="map_package" default="$(find third_robot_2dnav)" />
-    <arg     if="$(arg gazebo)" name="map_package" default="$(find third_robot_2dnav_gazebo)" />
+    <arg unless="$(arg gazebo)" name="map_package" default="$(find cirkit_unit03_navigation)" />
+    <arg     if="$(arg gazebo)" name="map_package" default="$(find cirkit_unit03_navigation_gazebo)" />
 
     <node pkg="remote_monitor" name="$(arg ns)" type="remote_monitor_server" output="screen" 
         args="$(arg map_package) $(arg ns)" >

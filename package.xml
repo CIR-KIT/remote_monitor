@@ -6,7 +6,8 @@
 
   <maintainer email="k104009y@mail.kyutech.jp">Arita Yuta</maintainer>
   <license>MIT</license>
-  <!-- <url type="website">http://wiki.ros.org/third_robot_monitor</url> -->
+  <url type="repository">https://github.com/CIR-KIT/remote_monitor.git</url>
+  <url type="bugtracker">https://github.com/CIR-KIT/remote_monitor/issues</url>
 
   <author email="cirkit.infomation@gmail.com">CIR-KIT</author>
 

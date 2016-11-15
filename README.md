@@ -7,7 +7,7 @@ Remote monitoring package for navigation
 下記のコマンドで上記動画のように遊べるはずです
 
 ```bash
-$ roslaunch third_robot_2dnav_gazebo autorun.launch 
+$ roslaunch cirkit_unit03_navigation_gazebo autorun.launch 
 $ roslaunch remote_monitor remote_monitor_server.launch gazebo:=true map_yaml:=playpen_map.yaml
 $ roslaunch remote_monitor remote_monitor_client.launch 
 ```
@@ -23,8 +23,8 @@ $ roslaunch remote_monitor remote_monitor_client.launch
 ## How to launch
 ### service server
 - 地図の在処として，下記のパッケージ配下のフォルダを見に行きます．
-  - 実機: `$(find third_robot_2dnav)/map/`
-  - Gazebo: `$(find third_robot_2dnav_gazebo)/map/`
+  - 実機: `$(find cirkit_unit03_navigation)/map/`
+  - Gazebo: `$(find cirkit_unit03_navigation_gazebo)/map/`
 - 地図名は引数で指定して下さい．
 
 - 実機の場合のコマンド

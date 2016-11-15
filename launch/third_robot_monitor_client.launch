@@ -1,8 +1,0 @@
-<launch>
-    <arg name="ns" default="third_robot_monitor_client" />
-
-    <node pkg="third_robot_monitor" name="$(arg ns)" type="third_robot_monitor_client" output="screen" 
-        args="$(arg ns)" >
-        <rosparam command="load" file="$(find third_robot_monitor)/config/third_robot_monitor_client.yaml" />
-    </node>
-</launch>

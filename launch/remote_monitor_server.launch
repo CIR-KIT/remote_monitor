@@ -1,0 +1,15 @@
+<launch>
+    <arg name="map_yaml" default="playpen_map.yaml" />
+    <arg name="ns" default="remote_monitor_server" />
+
+    <arg name="gazebo" default="false" />
+    <arg unless="$(arg gazebo)" name="map_package" default="$(find cirkit_unit03_navigation)" />
+    <arg     if="$(arg gazebo)" name="map_package" default="$(find cirkit_unit03_navigation_gazebo)" />
+
+    <node pkg="remote_monitor" name="$(arg ns)" type="remote_monitor_server" output="screen" 
+        args="$(arg map_package) $(arg ns)" >
+        <!--rosparam command="load" file="$(find remote_monitor)/config/remote_monitor.yaml" /-->
+        <param name="ratio" value="1.0" />
+        <rosparam command="load" file="$(arg map_package)/map/$(arg map_yaml)" />
+    </node>
+</launch>

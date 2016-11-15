@@ -5,10 +5,12 @@
   <description>The remonot monitor package</description>
 
   <maintainer email="k104009y@mail.kyutech.jp">Arita Yuta</maintainer>
+  <maintainer email="p595201m@mail.kyutech.jp">Masaru Morita</maintainer>
   <license>MIT</license>
-  <!-- <url type="website">http://wiki.ros.org/third_robot_monitor</url> -->
 
-  <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
+  <url type="repository">https://github.com/CIR-KIT/remote_monitor.git</url>
+  <url type="bugtracker">https://github.com/CIR-KIT/remote_monitor/issues</url>
+  <author email="cirkit.infomation@gmail.com">CIR-KIT</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>roscpp</depend>
@@ -18,6 +20,8 @@
   <depend>sensor_msgs</depend>
   <depend>tf</depend>
   <depend>waypoint_navigator</depend>
+  <exec_depend>cirkit_unit03_navigation</exec_depend>
+  <exec_depend>cirkit_unit03_navigation_gazebo</exec_depend>
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
 

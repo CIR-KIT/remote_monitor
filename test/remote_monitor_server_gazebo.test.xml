@@ -1,0 +1,14 @@
+<launch>
+    <arg name="map_yaml" default="playpen_map.yaml" />
+    <arg name="ns" default="remote_monitor_server" />
+
+    <arg name="gazebo" default="true" />
+    <arg unless="$(arg gazebo)" name="map_package" default="$(find remote_monitor)" />
+    <arg     if="$(arg gazebo)" name="map_package" default="$(find remote_monitor)" />
+
+    <node pkg="remote_monitor" name="$(arg ns)" type="remote_monitor_server" output="screen" 
+        args="$(arg map_package) $(arg ns)" >
+        <param name="ratio" value="1.0" />
+        <rosparam command="load" file="$(arg map_package)/test/map/$(arg map_yaml)" />
+    </node>
+</launch>

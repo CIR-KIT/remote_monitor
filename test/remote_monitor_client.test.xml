@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find remote_monitor)/launch/remote_monitor_client.launch">
+	<arg name="ns" value="remote_monitor_client"/>
+  </include>
+</launch>

@@ -1,4 +1,4 @@
-# remote_monitor
+# remote_monitor  [![Build Status](https://travis-ci.org/CIR-KIT/remote_monitor.svg?branch)](https://travis-ci.org/CIR-KIT/remote_monitor) [![Slack](https://img.shields.io/badge/Slack-CIR--KIT-blue.svg)](http://cir-kit.slack.com)
 Remote monitoring package for navigation
 
 ## Demo Video

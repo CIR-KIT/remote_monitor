@@ -19,7 +19,23 @@ $ roslaunch remote_monitor remote_monitor_client.launch
 ### monitor_client
  - 移動ロボット側`node`．一定距離毎に現在位置と姿勢を`service`で送信する．
  - デフォルトでは`/amcl_pose`を`subscribe`する．
- 
+
+## Installation
+以下のコマンドにしたがってインストールしてください．  
+なお`<catkin_ws>`は，任意のcatkinizeされたワークスペースへのパスを表します．
+
+```bash
+$ cd <catkin_ws>/src
+$ git clone https://github.com/CIR-KIT/remote_monitor.git
+$ cd <catkin_ws>
+$ wstool init src
+$ wstool merge -t src src/remote_monitor/dependencies.rosinstall
+$ wstool update -t src
+$ rosdep update && rosdep install -r -y --from-paths src --ignore-src
+$ catkin_make
+$ source devel/setup.bash
+```
+
 ## How to launch
 ### service server
 - 地図の在処として，下記のパッケージ配下のフォルダを見に行きます．

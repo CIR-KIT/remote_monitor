@@ -29,7 +29,7 @@ $ cd <catkin_ws>/src
 $ git clone https://github.com/CIR-KIT/remote_monitor.git
 $ cd <catkin_ws>
 $ wstool init src
-$ wstool merge -t src src/remote_monitor/dependencies.rosinstall
+$ wstool merge -t src src/remote_monitor/remote_monitor.rosinstall
 $ wstool update -t src
 $ rosdep update && rosdep install -r -y --from-paths src --ignore-src
 $ catkin_make
@@ -39,8 +39,7 @@ $ source devel/setup.bash
 ## How to launch
 ### service server
 - 地図の在処として，下記のパッケージ配下のフォルダを見に行きます．
-  - 実機: `$(find cirkit_unit03_navigation)/map/`
-  - Gazebo: `$(find cirkit_unit03_navigation_gazebo)/map/`
+  - $(find cirkit_unit03_maps)/map/`
 - 地図名は引数で指定して下さい．
 
 - 実機の場合のコマンド
@@ -51,7 +50,7 @@ $ roslaunch remote_monitor remote_monitor_server.launch map_yaml:=hogehoge.yaml
 
 - `Gazebo`の場合のコマンド
 ```
-$ roslaunch remote_monitor remote_monitor_server.launch map_yaml:=hogehoge.yaml gazebo:=true
+$ roslaunch remote_monitor remote_monitor_server_gazebo.launch map_yaml:=hogehoge.yaml
 ```
 
 ### service client
@@ -141,10 +140,16 @@ $ rosservice list
 ```
 
 #### 6. モニタークライアントを起動する
+
+- 実機設定
 ```bash
 $ roslaunch remote_monitor remote_monitor_client.launch
 ```
 
+- Gazebo設定
+```bash
+$ roslaunch remote_monitor remote_monitor_client_gazebo.launch
+```
 
 ## parameters
 - `/config/remote_monitor_server.yaml`

@@ -24,7 +24,4 @@
   <depend>cirkit_waypoint_manager_msgs</depend>
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
-
-  <export>
-  </export>
 </package>

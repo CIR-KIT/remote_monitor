@@ -1,8 +1,0 @@
-- git:
-    local-name: waypoint_manager
-    uri: https://github.com/CIR-KIT/waypoint_manager.git
-    version: master
-- git:
-    local-name: cirkit_unit03
-    uri: https://github.com/CIR-KIT-Unit03/cirkit_unit03.git
-    version: master

@@ -1,0 +1,8 @@
+<launch>
+    <arg name="ns" default="remote_monitor_client" />
+
+    <node pkg="remote_monitor" name="$(arg ns)" type="remote_monitor_client" output="screen" 
+        args="$(arg ns)" >
+        <rosparam command="load" file="$(find remote_monitor)/config/remote_monitor_client_gazebo.yaml" />
+    </node>
+</launch>

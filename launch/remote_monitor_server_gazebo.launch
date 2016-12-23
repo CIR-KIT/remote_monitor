@@ -1,9 +1,7 @@
 <launch>
-  <!-- Change the following <map_name_for_real_robot.yaml> part for your environment. -->
-  <arg name="map_yaml" default="<map_name_for_real_robot.yaml>" />
+    <arg name="map_yaml" default="playpen_map.yaml" />
     <arg name="ns" default="remote_monitor_server" />
 
-    <arg name="gazebo" default="false" />
     <arg name="map_package" default="$(find cirkit_unit03_maps)" />
 
     <node pkg="remote_monitor" name="$(arg ns)" type="remote_monitor_server" output="screen" 

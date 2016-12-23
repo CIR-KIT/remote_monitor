@@ -8,13 +8,14 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   sensor_msgs
   tf
+  cirkit_waypoint_navigator
 )
 
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_package(
-  CATKIN_DEPENDS roscpp cv_bridge geometry_msgs nav_msgs sensor_msgs tf 
+  CATKIN_DEPENDS roscpp cv_bridge geometry_msgs nav_msgs sensor_msgs tf cirkit_waypoint_navigator 
   DEPENDS OpenCV Boost
 )
 

@@ -4,7 +4,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "sensor_msgs/image_encodings.h"
 #include "tf/transform_broadcaster.h"
-#include "waypoint_navigator/TeleportAbsolute.h"
+#include "cirkit_waypoint_navigator/TeleportAbsolute.h"
 
 #include <stdio.h>
 
@@ -50,10 +50,10 @@ enum MAP_COORD
 class RemoteMonitorServer
 {
 public:
-    bool getRobotPose(waypoint_navigator::TeleportAbsolute::Request  &req,
-                      waypoint_navigator::TeleportAbsolute::Response &res);
-    bool getHumanPose(waypoint_navigator::TeleportAbsolute::Request  &req,
-                      waypoint_navigator::TeleportAbsolute::Response &res);
+    bool getRobotPose(cirkit_waypoint_navigator::TeleportAbsolute::Request  &req,
+                      cirkit_waypoint_navigator::TeleportAbsolute::Response &res);
+    bool getHumanPose(cirkit_waypoint_navigator::TeleportAbsolute::Request  &req,
+                      cirkit_waypoint_navigator::TeleportAbsolute::Response &res);
 
     RemoteMonitorServer(const std::string i_image_path, const std::string i_name_space)
        : rate_(ROS_SPIN_RATE), state_(CURR_POSITON)
@@ -61,17 +61,17 @@ public:
         //ros::NodeHandle n("~");
         //rate_ = ROS_SPIN_RATE;
         map_origin_.clear();
-        server_robot_pose_ = nh_.advertiseService<waypoint_navigator::TeleportAbsolute::Request,
-                waypoint_navigator::TeleportAbsolute::Response>
+        server_robot_pose_ = nh_.advertiseService<cirkit_waypoint_navigator::TeleportAbsolute::Request,
+                cirkit_waypoint_navigator::TeleportAbsolute::Response>
                 ("remote_monitor_robot_pose", boost::bind(&RemoteMonitorServer::getRobotPose, this, _1, _2));
-        server_human_pose_ = nh_.advertiseService<waypoint_navigator::TeleportAbsolute::Request,
-                waypoint_navigator::TeleportAbsolute::Response>
+        server_human_pose_ = nh_.advertiseService<cirkit_waypoint_navigator::TeleportAbsolute::Request,
+                cirkit_waypoint_navigator::TeleportAbsolute::Response>
                 ("remote_monitor_human_pose", boost::bind(&RemoteMonitorServer::getHumanPose, this, _1, _2));
 
         this->loadRosParam(i_image_path, i_name_space);
     }
 
-    void drawRobotPoseOnMap(waypoint_navigator::TeleportAbsolute::Request &req)
+    void drawRobotPoseOnMap(cirkit_waypoint_navigator::TeleportAbsolute::Request &req)
     {
         // only current point
         drawArrow(map_img_pos_curr_, req);
@@ -79,7 +79,7 @@ public:
         drawArrow(map_img_pos_hist_, req);
     }
 
-    void drawArrow(cv::Mat &img, waypoint_navigator::TeleportAbsolute::Request &req)
+    void drawArrow(cv::Mat &img, cirkit_waypoint_navigator::TeleportAbsolute::Request &req)
     {
         // only current pos
         map_img_ori_small_.copyTo(map_img_pos_curr_);
@@ -134,7 +134,7 @@ public:
         cv::fillPoly( img, ppt, npt, 1, GREEN, lineType );
     }
 
-    void drawHumanPoseOnMap(waypoint_navigator::TeleportAbsolute::Request &req)
+    void drawHumanPoseOnMap(cirkit_waypoint_navigator::TeleportAbsolute::Request &req)
     {
         // only current pos
         map_img_ori_small_.copyTo(map_img_pos_curr_);
@@ -336,13 +336,13 @@ private:
     cv::Mat map_img_pos_curr_;
     cv::Mat map_img_pos_hist_;
     // state
-    waypoint_navigator::TeleportAbsolute::Request req_;
+    cirkit_waypoint_navigator::TeleportAbsolute::Request req_;
     int state_;
 };
 
 
-bool RemoteMonitorServer::getRobotPose(waypoint_navigator::TeleportAbsolute::Request  &req,
-                                           waypoint_navigator::TeleportAbsolute::Response &res)
+bool RemoteMonitorServer::getRobotPose(cirkit_waypoint_navigator::TeleportAbsolute::Request  &req,
+                                       cirkit_waypoint_navigator::TeleportAbsolute::Response &res)
 {
     ROS_INFO("RobotPose: [x] -> %6.2f, [y] -> %6.2f, [theta] -> %6.2f", req.x, req.y, req.theta);
 
@@ -352,8 +352,8 @@ bool RemoteMonitorServer::getRobotPose(waypoint_navigator::TeleportAbsolute::Req
     return true;
 }
 
-bool RemoteMonitorServer::getHumanPose(waypoint_navigator::TeleportAbsolute::Request  &req,
-                                           waypoint_navigator::TeleportAbsolute::Response &res)
+bool RemoteMonitorServer::getHumanPose(cirkit_waypoint_navigator::TeleportAbsolute::Request  &req,
+                                       cirkit_waypoint_navigator::TeleportAbsolute::Response &res)
 {
     ROS_INFO("HumanPose: [x] -> %6.2f, [y] -> %6.2f, [theta] -> %6.2f", req.x, req.y, req.theta);
 
